@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StoryApp</string>
+    <string name="detail_screen">Detail Cerita</string>
+
+    <string name="valid_email">Harap masukkan email yang valid</string>
+    <string name="valid_password">Kata sandi harus terdiri dari minimal 8 karakter</string>
+
+    <string name="err_email">Email tidak boleh kosong</string>
+    <string name="err_camera">Gagal menampilkan kamera</string>
+    <string name="err_capture">Gagal mengambil gambar</string>
+    <string name="err_image">Gambar tidak boleh kosong</string>
+    <string name="err_name_field">Nama tidak boleh kosong</string>
+    <string name="err_password_field">Kata sandi tidak boleh kosong</string>
+    <string name="err_description_field">Deskripsi tidak boleh kosong</string>
+    <string name="err_photo_picker">PhotoPicker: Tidak ada media yang dipilih</string>
+    <string name="err_document_picker">OpenDocumentPicker: Tidak ada media yang dipilih</string>
+    <string name="err_photo_picker_not_available">Photo Picker tidak didukung pada perangkat ini</string>
+
+    <string name="email">Email</string>
+    <string name="password">Kata Sandi</string>
+    <string name="login">Masuk</string>
+    <string name="or">Atau</string>
+    <string name="register">Daftar</string>
+
+    <string name="name">Nama</string>
+    <string name="created_at">Dibuat Pada</string>
+    <string name="description">Deskripsi</string>
+
+    <string name="title">Judul</string>
+    <string name="thumbnail">Thumbnail</string>
+
+    <string name="fab_content_desc">Tambah Cerita</string>
+    <string name="iv_content_desc">Placeholder Story</string>
+
+    <string name="take_picture">Ambil Gambar</string>
+    <string name="open_gallery">Buka Galeri</string>
+    <string name="post_story">Posting</string>
+    <string name="description_field">Deskripsi</string>
+    <string name="rotate_camera">Putar Camera</string>
+    <string name="open_camera">Buka Kamera</string>
+    <string name="permission_granted">Izin diberikan</string>
+    <string name="permission_denied">Izin ditolak</string>
+
+
+    <string name="logout">Keluar</string>
+    <string name="logout_dialog_message">Apakah Anda yakin ingin keluar?</string>
+    <string name="dialog_positive_button">OK</string>
+    <string name="dialog_negative_button">Batal</string>
+
+    <string name="success_title">Berhasil</string>
+    <string name="close_title">Tutup</string>
+
+    <string name="content_desc_detail_story">Gambar Cerita</string>
+    <string name="welcome">Selamat datang!</string>
+    <string name="sub_headline">StoryApp adalah platform untuk berbagi cerita dan pengalaman seputar Dicoding. Di sini, kamu bisa menemukan berbagai kisah inspiratif dari para programmer dan developer muda yang telah mengikuti kelas dan workshop di Dicoding.</string>
+    <string name="language_setting">Pengaturan bahasa</string>
+</resources>

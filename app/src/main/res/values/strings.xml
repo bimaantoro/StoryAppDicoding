@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name" translatable="false">StoryApp</string>
+    <string name="detail_screen">Detail Story</string>
+
+    <string name="valid_email">Please input a valid email</string>
+    <string name="valid_password">Password must consist of minimum 8 characters</string>
+
+    <string name="err_email">Email cannot be empty</string>
+    <string name="err_camera">Failed to display camera</string>
+    <string name="err_capture">Failed to capture image</string>
+    <string name="err_image">Image cannot be empty</string>
+    <string name="err_name_field">Name cannot be empty</string>
+    <string name="err_password_field">Password cannot be empty</string>
+    <string name="err_description_field">Description cannot be empty</string>
+    <string name="err_photo_picker">PhotoPicker: No media selected</string>
+    <string name="err_document_picker">OpenDocumentPicker: No media selected</string>
+    <string name="err_photo_picker_not_available">Photo Picker is not supported on this device</string>
+
+    <string name="email" translatable="false">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="or">Or</string>
+    <string name="register">Register</string>
+
+    <string name="name">Name</string>
+    <string name="created_at">Created At</string>
+    <string name="description">Description</string>
+
+    <string name="title">Title</string>
+    <string name="thumbnail" translatable="false">Thumbnail</string>
+    <string name="fab_content_desc">Add Story</string>
+    <string name="iv_content_desc" translatable="false">Placeholder Story</string>
+    <string name="take_picture">Take a Picture</string>
+    <string name="open_gallery">Open Gallery</string>
+    <string name="post_story">Post</string>
+    <string name="description_field">Description</string>
+    <string name="rotate_camera">Rotate Camera</string>
+    <string name="open_camera">Open Camera</string>
+    <string name="permission_granted">Permission granted</string>
+    <string name="permission_denied">Permission denied</string>
+
+    <string name="logout">Logout</string>
+    <string name="logout_dialog_message">Are you sure you want to logout?</string>
+    <string name="dialog_positive_button">OK</string>
+    <string name="dialog_negative_button">Cancel</string>
+
+    <string name="success_title">Success</string>
+    <string name="close_title">Close</string>
+
+    <string name="content_desc_detail_story">Image Story</string>
+    <string name="welcome">Welcome!</string>
+    <string name="sub_headline">StoryApp is a platform for sharing stories and experiences about Dicoding. Here, you can find inspiring stories from young programmers and developers who have attended classes and workshops at Dicoding.</string>
+    <string name="language_setting">Language setting</string>
+</resources>
