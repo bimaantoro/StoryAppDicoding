@@ -1,6 +1,8 @@
 package com.example.storyapp.data.remote.responses
 
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
@@ -35,8 +37,8 @@ data class ListStoryItem(
     val lon: Double? = null,
 
     @field:SerializedName("id")
-    val id: String? = null,
+    val id: String,
 
     @field:SerializedName("lat")
     val lat: Double? = null
-): Parcelable
+) : Parcelable

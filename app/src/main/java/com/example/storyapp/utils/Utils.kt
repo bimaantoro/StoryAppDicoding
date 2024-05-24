@@ -6,15 +6,20 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
 import androidx.exifinterface.media.ExifInterface
+import com.example.storyapp.R
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
-import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import java.util.concurrent.TimeUnit
 
 private const val MAXIMAL_SIZE = 1000000
 private const val FILENAME_FORMAT = "yyyyMMdd_HHmmss"
@@ -76,19 +81,52 @@ fun rotateImage(source: Bitmap, angle: Float): Bitmap? {
     )
 }
 
-fun formateDate(currentDate: String): String? {
-    val currentFormat = "yyyy-MM-dd'T'hh:mm:ss.SSS'Z'"
-    val targetFormat = "dd MMM yyyy | HH:mm"
-    val timezone = "GMT"
-    val currentDf: DateFormat = SimpleDateFormat(currentFormat, Locale.getDefault())
-    currentDf.timeZone = TimeZone.getTimeZone(timezone)
-    val targetDf: DateFormat = SimpleDateFormat(targetFormat, Locale.getDefault())
-    var targetDate: String? = null
-    try {
-        val date = currentDf.parse(currentDate) as Date
-        targetDate = targetDf.format(date)
+fun formatDate(currentDate: String, context: Context): String? {
+    val currentFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+    val timeZoneUTC = TimeZone.getTimeZone("UTC")
+    val timeZoneIndonesia = TimeZone.getTimeZone("Asia/Jakarta")
+    currentFormat.timeZone = timeZoneUTC
+    return try {
+        val date = currentFormat.parse(currentDate)
+
+        if (date != null) {
+            val calendar = Calendar.getInstance()
+            calendar.time = date
+            calendar.timeZone = timeZoneIndonesia
+            val dateIndonesia = calendar.time
+            val now = Date()
+
+            val diffInMilliSeconds = now.time - dateIndonesia.time
+            val diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diffInMilliSeconds)
+
+            if (diffInMinutes < 1) {
+                return context.getString(R.string.just_now)
+            } else if (diffInMinutes < 60) {
+                return context.getString(R.string.minutes_ago, diffInMinutes)
+            } else {
+                val diffInHours = TimeUnit.MINUTES.toHours(diffInMinutes)
+                if (diffInHours < 24) {
+                    return context.getString(R.string.hours_ago, diffInHours)
+                } else {
+                    val outputDate = SimpleDateFormat("d MMMM yyyy, HH:mm:ss", Locale.getDefault())
+                    return outputDate.format(dateIndonesia)
+                }
+            }
+        } else {
+            context.getString(R.string.invalid_date)
+        }
+
     } catch (exc: Exception) {
         exc.printStackTrace()
+        context.getString(R.string.invalid_date)
     }
-    return targetDate
+}
+
+
+fun formatDateISO8601(currentDate: String, targetTimeZone: String): String {
+    val instant = Instant.parse(currentDate)
+    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy | HH:mm")
+        .withZone(ZoneId.of(targetTimeZone))
+    return formatter.format(instant)
+
 }

@@ -4,6 +4,12 @@
     <group android:menuCategory="container">
 
         <item
+            android:id="@+id/map"
+            app:showAsAction="ifRoom"
+            android:title="@string/maps"
+            android:icon="@drawable/ic_map" />
+
+        <item
             android:id="@+id/setting"
             android:icon="@drawable/ic_settings"
             android:title="@string/language_setting"

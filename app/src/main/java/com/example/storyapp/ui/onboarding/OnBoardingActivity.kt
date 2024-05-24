@@ -70,7 +70,7 @@ class OnBoardingActivity : AppCompatActivity() {
         val login = ObjectAnimator.ofFloat(binding.btnGoToLogin, View.ALPHA, 1f).setDuration(100)
         val register =
             ObjectAnimator.ofFloat(binding.btnGoToRegister, View.ALPHA, 1f).setDuration(100)
-        val headline = ObjectAnimator.ofFloat(binding.tvHeadline, View.ALPHA, 1f).setDuration(100)
+        val headline = ObjectAnimator.ofFloat(binding.tvWelcome, View.ALPHA, 1f).setDuration(100)
         val subHeadline =
             ObjectAnimator.ofFloat(binding.tvSubHeadline, View.ALPHA, 1f).setDuration(100)
 

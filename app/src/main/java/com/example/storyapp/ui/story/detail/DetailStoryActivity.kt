@@ -8,9 +8,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.example.storyapp.R
-import com.example.storyapp.data.remote.responses.ListStoryItem
+import com.example.storyapp.data.local.entity.StoryEntity
 import com.example.storyapp.databinding.ActivityDetailStoryBinding
-import com.example.storyapp.utils.formateDate
+import com.example.storyapp.utils.formatDateISO8601
+import java.util.TimeZone
 
 class DetailStoryActivity : AppCompatActivity() {
 
@@ -46,7 +47,7 @@ class DetailStoryActivity : AppCompatActivity() {
 
     private fun setupData() {
         val story = if (Build.VERSION.SDK_INT >= 33) {
-            intent.getParcelableExtra(STORY_EXTRA, ListStoryItem::class.java)
+            intent.getParcelableExtra(STORY_EXTRA, StoryEntity::class.java)
         } else {
             @Suppress("DEPRECATION")
             intent.getParcelableExtra(STORY_EXTRA)
@@ -54,7 +55,12 @@ class DetailStoryActivity : AppCompatActivity() {
 
         if (story != null) {
             binding.contentDetailStory.detailEdtName.setText(story.name)
-            binding.contentDetailStory.detailEdtCreatedAt.setText(formateDate(story.createdAt.toString()))
+            binding.contentDetailStory.detailEdtCreatedAt.setText(
+                formatDateISO8601(
+                    story.createdAt.toString(),
+                    TimeZone.getDefault().id
+                )
+            )
             binding.contentDetailStory.detailEdtDesc.setText(story.description)
 
             Glide.with(this).load(story.photoUrl).into(binding.contentDetailStory.ivThumbnail)

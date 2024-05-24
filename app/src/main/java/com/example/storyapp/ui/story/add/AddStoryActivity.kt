@@ -3,6 +3,7 @@ package com.example.storyapp.ui.story.add
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -20,6 +21,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.storyapp.R
 import com.example.storyapp.data.ResultState
+import com.example.storyapp.data.remote.responses.CommonResponse
 import com.example.storyapp.databinding.ActivityAddStoryBinding
 import com.example.storyapp.ui.ViewModelFactory
 import com.example.storyapp.ui.camera.CameraActivity
@@ -28,11 +30,14 @@ import com.example.storyapp.ui.camera.CameraActivity.Companion.EXTRA_IMAGE
 import com.example.storyapp.ui.story.main.MainStoryActivity
 import com.example.storyapp.utils.reduceFileImage
 import com.example.storyapp.utils.uriToFile
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class AddStoryActivity : AppCompatActivity() {
 
     private var currentImageUri: Uri? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
 
     private val binding: ActivityAddStoryBinding by lazy {
@@ -43,19 +48,24 @@ class AddStoryActivity : AppCompatActivity() {
         ViewModelFactory.getInstance(this)
     }
 
-    private fun allPermissionGranted() =
-        ContextCompat.checkSelfPermission(
+    private fun checkPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
             this,
-            REQUIRED_PERMISSION,
+            permission
         ) == PackageManager.PERMISSION_GRANTED
+    }
 
     private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            showToast(getString(R.string.permission_granted))
-        } else {
-            showToast(getString(R.string.permission_denied))
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permission ->
+        when {
+            permission[ACCESS_FINE_LOCATION_PERMISSION] ?: false -> {
+                getMyLastLocation()
+            }
+
+            permission[ACCESS_COARSE_LOCATION_PERMISSION] ?: false -> {
+                getMyLastLocation()
+            }
         }
     }
 
@@ -69,11 +79,33 @@ class AddStoryActivity : AppCompatActivity() {
             insets
         }
 
-        if (!allPermissionGranted()) {
-            requestPermissionLauncher.launch(REQUIRED_PERMISSION)
+        setupLocationClient()
+        setupPermission()
+        setupAction()
+    }
+
+    private fun setupLocationClient() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+    }
+
+    private fun setupPermission() {
+        if (!checkPermission(CAMERA_REQUIRED_PERMISSION)) {
+            requestPermissionLauncher.launch(arrayOf(CAMERA_REQUIRED_PERMISSION))
         }
 
-        setupAction()
+        binding.switchEnableLocation.setOnClickListener {
+            if (!checkPermission(ACCESS_FINE_LOCATION_PERMISSION) && !checkPermission(
+                    ACCESS_COARSE_LOCATION_PERMISSION
+                )
+            ) {
+                requestPermissionLauncher.launch(
+                    arrayOf(
+                        ACCESS_FINE_LOCATION_PERMISSION,
+                        ACCESS_COARSE_LOCATION_PERMISSION
+                    )
+                )
+            }
+        }
     }
 
     private fun setupAction() {
@@ -87,66 +119,94 @@ class AddStoryActivity : AppCompatActivity() {
         }
 
         binding.btnOpenCamera.setOnClickListener {
-            val intent = Intent(this, CameraActivity::class.java)
+            val intent = Intent(this@AddStoryActivity, CameraActivity::class.java)
             launcherCamera.launch(intent)
         }
 
         binding.btnPostStory.setOnClickListener {
-            setupPostAction()
+            if (binding.switchEnableLocation.isChecked) {
+                getMyLastLocation { lat, lon ->
+                    setupPostAction(lat, lon)
+                }
+            } else {
+                setupPostAction()
+            }
         }
     }
 
-    private fun setupPostAction() {
+    private fun setupPostAction(lat: Double? = null, lon: Double? = null) {
         val description = binding.edtDescription.text.toString()
 
         if (description.isEmpty()) {
-            binding.edtDescription.error = getString(R.string.err_description_field)
-            binding.edtDescription.requestFocus()
-        } else {
-            currentImageUri?.let { uri ->
-                val imageFile = uriToFile(uri, this).reduceFileImage()
-
-                binding.progressBar.visibility = View.VISIBLE
-
-                viewModel.postStory(imageFile, description)
-
-                viewModel.postStoryResult.observe(this) { resultState ->
-                    if (resultState != null) {
-                        when (resultState) {
-                            is ResultState.Loading -> {
-                                binding.progressBar.visibility = View.VISIBLE
-                            }
-
-                            is ResultState.Error -> {
-                                val error = resultState.error
-                                showToast(error)
-                                binding.progressBar.visibility = View.GONE
-                            }
-
-                            is ResultState.Success -> {
-                                binding.progressBar.visibility = View.GONE
-
-                                MaterialAlertDialogBuilder(this).apply {
-                                    setTitle(getString(R.string.success_title))
-                                    setMessage(resultState.data.message)
-                                    setPositiveButton(getString(R.string.close_title)) { _, _ ->
-                                        moveToMain()
-                                    }
-
-                                }
-                                    .create()
-                                    .show()
-                            }
-                        }
-                    }
-
-                }
-
-
-            } ?: showToast(getString(R.string.err_image))
+            binding.edtDescription.apply {
+                error = getString(R.string.err_description_field)
+                requestFocus()
+            }
+            return
         }
 
+        currentImageUri?.let { uri ->
+            val imageFile = uriToFile(uri, this).reduceFileImage()
 
+            binding.progressBar.visibility = View.VISIBLE
+            viewModel.postStory(imageFile, description, lat, lon)
+
+            viewModel.postStoryResult.observe(this) { resultState ->
+                binding.progressBar.visibility = View.GONE
+                observerPostStoryResult(resultState)
+
+            }
+
+        } ?: showToast(getString(R.string.err_image))
+    }
+
+    private fun observerPostStoryResult(resultState: ResultState<CommonResponse>) {
+        when (resultState) {
+            is ResultState.Loading -> {
+                binding.progressBar.visibility = View.VISIBLE
+            }
+
+            is ResultState.Error -> {
+                val error = resultState.error
+                showToast(error)
+                binding.progressBar.visibility = View.GONE
+            }
+
+            is ResultState.Success -> {
+                binding.progressBar.visibility = View.GONE
+
+                MaterialAlertDialogBuilder(this).apply {
+                    setTitle(getString(R.string.success_title))
+                    setMessage(resultState.data.message)
+                    setPositiveButton(getString(R.string.close_title)) { _, _ ->
+                        moveToMain()
+                    }
+
+                }.create().show()
+            }
+        }
+    }
+
+    private fun getMyLastLocation(callback: (Double?, Double?) -> Unit = { _, _ -> }) {
+        if (checkPermission(ACCESS_FINE_LOCATION_PERMISSION) && checkPermission(
+                ACCESS_COARSE_LOCATION_PERMISSION
+            )
+        ) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    callback(location.latitude, location.longitude)
+                } else {
+                    showToast(getString(R.string.err_location))
+                }
+            }
+        } else {
+            requestPermissionLauncher.launch(
+                arrayOf(
+                    ACCESS_FINE_LOCATION_PERMISSION,
+                    ACCESS_COARSE_LOCATION_PERMISSION
+                )
+            )
+        }
     }
 
     private fun isPhotoPickerAvailable(): Boolean {
@@ -218,6 +278,9 @@ class AddStoryActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val REQUIRED_PERMISSION = Manifest.permission.CAMERA
+        private const val CAMERA_REQUIRED_PERMISSION = Manifest.permission.CAMERA
+        private const val ACCESS_FINE_LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
+        private const val ACCESS_COARSE_LOCATION_PERMISSION =
+            Manifest.permission.ACCESS_COARSE_LOCATION
     }
 }

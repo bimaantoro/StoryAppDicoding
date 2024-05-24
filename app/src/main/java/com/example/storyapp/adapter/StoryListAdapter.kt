@@ -4,20 +4,20 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.example.storyapp.R
-import com.example.storyapp.data.remote.responses.ListStoryItem
+import com.example.storyapp.data.local.entity.StoryEntity
 import com.example.storyapp.databinding.ItemStoryBinding
 import com.example.storyapp.ui.story.detail.DetailStoryActivity
 import com.example.storyapp.ui.story.main.MainStoryActivity
-import androidx.core.util.Pair
-import com.example.storyapp.utils.formateDate
+import com.example.storyapp.utils.formatDateISO8601
+import java.util.TimeZone
 
-class StoryListAdapter : ListAdapter<ListStoryItem, StoryListAdapter.MyViewHolder>(DIFF_CALLBACK) {
+class StoryListAdapter :
+    PagingDataAdapter<StoryEntity, StoryListAdapter.MyViewHolder>(DIFF_CALLBACK) {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -27,21 +27,24 @@ class StoryListAdapter : ListAdapter<ListStoryItem, StoryListAdapter.MyViewHolde
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val story = getItem(position)
-        holder.bind(story)
+
+        if (story != null) {
+            holder.bind(story)
+        }
+
+
     }
 
     class MyViewHolder(private val binding: ItemStoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(story: ListStoryItem) {
+        fun bind(story: StoryEntity) {
             binding.tvName.text = story.name
-            binding.tvCreatedAt.text = formateDate(story.createdAt.toString())
+            binding.tvCreatedAt.text =
+                formatDateISO8601(story.createdAt.toString(), TimeZone.getDefault().id)
             binding.tvDesc.text = story.description
 
             Glide.with(itemView.context)
                 .load(story.photoUrl)
-                .apply(
-                    RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error)
-                )
                 .into(binding.ivThumbnail)
 
             itemView.setOnClickListener {
@@ -63,16 +66,16 @@ class StoryListAdapter : ListAdapter<ListStoryItem, StoryListAdapter.MyViewHolde
     }
 
     companion object {
-        val DIFF_CALLBACK: DiffUtil.ItemCallback<ListStoryItem> =
-            object : DiffUtil.ItemCallback<ListStoryItem>() {
+        val DIFF_CALLBACK: DiffUtil.ItemCallback<StoryEntity> =
+            object : DiffUtil.ItemCallback<StoryEntity>() {
                 override fun areItemsTheSame(
-                    oldItem: ListStoryItem,
-                    newItem: ListStoryItem
+                    oldItem: StoryEntity,
+                    newItem: StoryEntity
                 ): Boolean = oldItem.id == newItem.id
 
                 override fun areContentsTheSame(
-                    oldItem: ListStoryItem,
-                    newItem: ListStoryItem
+                    oldItem: StoryEntity,
+                    newItem: StoryEntity
                 ): Boolean = oldItem == newItem
 
             }

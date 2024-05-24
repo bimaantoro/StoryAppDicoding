@@ -3,11 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-feature android:name="android.hardware.camera" />
+
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -19,6 +22,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StoryApp"
         tools:targetApi="31">
+
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAuuQ_P8N3Jy2u_uZgeJCW-DMYJ2VMgTKI" />
+
+        <activity
+            android:name=".ui.story.main.maps.MapsStoryActivity"
+            android:exported="false"
+            android:label="@string/title_activity_maps_story" />
         <activity
             android:name=".ui.onboarding.OnBoardingActivity"
             android:exported="false" />

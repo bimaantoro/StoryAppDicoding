@@ -1,7 +1,16 @@
 package com.example.storyapp.data
 
+import androidx.lifecycle.LiveData
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.liveData
+import com.example.storyapp.data.local.entity.StoryEntity
+import com.example.storyapp.data.local.paging.StoryRemoteMediator
 import com.example.storyapp.data.local.pref.UserModel
 import com.example.storyapp.data.local.pref.UserPreference
+import com.example.storyapp.data.local.room.StoryDatabase
 import com.example.storyapp.data.remote.responses.CommonResponse
 import com.example.storyapp.data.remote.responses.LoginResponse
 import com.example.storyapp.data.remote.responses.StoriesResponse
@@ -22,6 +31,7 @@ import retrofit2.HttpException
 import java.io.File
 
 class StoryRepository private constructor(
+    private val storyDatabase: StoryDatabase,
     private val apiService: ApiService,
     private val userPreference: UserPreference,
 ) {
@@ -69,13 +79,25 @@ class StoryRepository private constructor(
         }
     }.flowOn(Dispatchers.IO)
 
+    fun getStories(): Flow<PagingData<StoryEntity>> {
+        @OptIn(ExperimentalPagingApi::class)
+        return Pager(
+            config = PagingConfig(
+                pageSize = 5
+            ),
+            remoteMediator = StoryRemoteMediator(storyDatabase, apiService, userPreference),
+            pagingSourceFactory = {
+                storyDatabase.storyDao().getAllStories()
+            }
+        ).flow
+    }
 
-    fun getStories(): Flow<ResultState<StoriesResponse>> = flow {
+    fun getStoriesWithLocation(): Flow<ResultState<StoriesResponse>> = flow {
         emit(ResultState.Loading)
         try {
             val user = runBlocking { userPreference.getSession().first() }
             val apiService = ApiConfig.getApiService(user.token)
-            val response = apiService.getStories()
+            val response = apiService.getStoriesWithLocation()
 
             if (response.error == true) {
                 emit(ResultState.Error(response.message.toString()))
@@ -88,12 +110,21 @@ class StoryRepository private constructor(
             val errorResponse = Gson().fromJson(errorBody, StoriesResponse::class.java)
             emit(ResultState.Error(errorResponse.message.toString()))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
-    fun postStory(imageFile: File, description: String): Flow<ResultState<CommonResponse>> = flow {
+    fun postStory(
+        imageFile: File,
+        description: String,
+        lat: Double?,
+        lon: Double?
+    ): Flow<ResultState<CommonResponse>> = flow {
         emit(ResultState.Loading)
 
-        val requestBody = description.toRequestBody("text/plain".toMediaType())
+        val textPlainMediaType = "text/plain".toMediaType()
+
+        val descriptionRequestBody = description.toRequestBody(textPlainMediaType)
+        val latRequestBody = lat.toString().toRequestBody(textPlainMediaType)
+        val lonRequestBody = lon.toString().toRequestBody(textPlainMediaType)
         val requestImageFile = imageFile.asRequestBody("image/jpeg".toMediaType())
         val multipartBody = MultipartBody.Part.createFormData(
             "photo",
@@ -104,7 +135,12 @@ class StoryRepository private constructor(
         try {
             val user = runBlocking { userPreference.getSession().first() }
             val apiService = ApiConfig.getApiService(user.token)
-            val response = apiService.postStory(multipartBody, requestBody)
+            val response = apiService.postStory(
+                multipartBody,
+                descriptionRequestBody,
+                latRequestBody,
+                lonRequestBody
+            )
 
             if (response.error == true) {
                 emit(ResultState.Error(response.message.toString()))
@@ -136,10 +172,11 @@ class StoryRepository private constructor(
         private var INSTANCE: StoryRepository? = null
 
         fun getInstance(
+            storyDatabase: StoryDatabase,
             apiService: ApiService,
             userPreference: UserPreference,
         ): StoryRepository = INSTANCE ?: synchronized(this) {
-            INSTANCE ?: StoryRepository(apiService, userPreference)
+            INSTANCE ?: StoryRepository(storyDatabase, apiService, userPreference)
         }.also { INSTANCE = it }
     }
 }

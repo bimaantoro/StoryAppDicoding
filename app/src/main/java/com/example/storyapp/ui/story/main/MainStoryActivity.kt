@@ -10,17 +10,24 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.storyapp.R
+import com.example.storyapp.adapter.LoadingStateAdapter
 import com.example.storyapp.adapter.StoryListAdapter
-import com.example.storyapp.data.ResultState
 import com.example.storyapp.databinding.ActivityMainStoryBinding
 import com.example.storyapp.ui.ViewModelFactory
 import com.example.storyapp.ui.onboarding.OnBoardingActivity
 import com.example.storyapp.ui.story.add.AddStoryActivity
+import com.example.storyapp.ui.story.main.maps.MapsStoryActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
 
 class MainStoryActivity : AppCompatActivity() {
+
+    private lateinit var storyListAdapter: StoryListAdapter
+
 
     private val binding: ActivityMainStoryBinding by lazy {
         ActivityMainStoryBinding.inflate(layoutInflater)
@@ -41,48 +48,55 @@ class MainStoryActivity : AppCompatActivity() {
         }
 
         setupAction()
+        setupStoryAdapter()
+        setupSession()
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!storyListAdapter.snapshot().isEmpty()) {
+            storyListAdapter.refresh()
+            lifecycleScope.launch {
+                storyListAdapter.loadStateFlow
+                    .collect {
+                        binding.contentMainStory.rvStory.smoothScrollToPosition(0)
+                    }
+            }
+        }
+    }
+
+    private fun setupSession() {
         viewModel.getSession().observe(this) { user ->
             if (!user.isLogin) {
                 startActivity(Intent(this, OnBoardingActivity::class.java))
                 finish()
-            } else {
-                viewModel.getStories()
             }
         }
-
-        val storyListAdapter = StoryListAdapter()
-        binding.contentMainStory.rvStory.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = storyListAdapter
-        }
-        fetchStories(storyListAdapter)
     }
 
-
-    private fun fetchStories(storyListAdapter: StoryListAdapter) {
-        viewModel.storyListResult.observe(this) { resultState ->
-            if (resultState != null) {
-                when (resultState) {
-                    is ResultState.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                    }
-
-                    is ResultState.Error -> {
-                        binding.progressBar.visibility = View.GONE
-                        val error = resultState.error
-
-                        showToast("Terjadi kesalahan: $error")
-                    }
-
-                    is ResultState.Success -> {
-                        binding.progressBar.visibility = View.GONE
-                        val storiesData = resultState.data.listStory
-                        storyListAdapter.submitList(storiesData)
-                    }
+    private fun setupStoryAdapter() {
+        storyListAdapter = StoryListAdapter()
+        binding.contentMainStory.rvStory.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = storyListAdapter.withLoadStateFooter(
+                footer = LoadingStateAdapter {
+                    storyListAdapter.retry()
                 }
-            }
+            )
+        }
 
+        storyListAdapter.addLoadStateListener { loadState ->
+            if (loadState.refresh is LoadState.Loading) {
+                binding.progressBar.visibility = View.VISIBLE
+            } else {
+                binding.progressBar.visibility = View.GONE
+            }
+        }
+
+        viewModel.storyListResult.observe(this) { result ->
+            binding.progressBar.visibility = View.GONE
+            storyListAdapter.submitData(lifecycle, result)
         }
     }
 
@@ -103,6 +117,18 @@ class MainStoryActivity : AppCompatActivity() {
                     }
                         .create()
                         .show()
+
+
+                    true
+                }
+
+                R.id.map -> {
+                    startActivity(
+                        Intent(
+                            this@MainStoryActivity,
+                            MapsStoryActivity::class.java
+                        )
+                    )
                     true
                 }
 
@@ -121,11 +147,6 @@ class MainStoryActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.getStories()
     }
 
     private fun showToast(message: String) {

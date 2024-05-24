@@ -15,6 +15,8 @@
     <string name="err_photo_picker">PhotoPicker: No media selected</string>
     <string name="err_document_picker">OpenDocumentPicker: No media selected</string>
     <string name="err_photo_picker_not_available">Photo Picker is not supported on this device</string>
+    <string name="err_location">Location is not found. Try Again</string>
+    <string name="empty_story">Data is empty</string>
 
     <string name="email" translatable="false">Email</string>
     <string name="password">Password</string>
@@ -51,4 +53,12 @@
     <string name="welcome">Welcome!</string>
     <string name="sub_headline">StoryApp is a platform for sharing stories and experiences about Dicoding. Here, you can find inspiring stories from young programmers and developers who have attended classes and workshops at Dicoding.</string>
     <string name="language_setting">Language setting</string>
+    <string name="retry">Retry</string>
+    <string name="title_activity_maps_story">MapsStoryActivity</string>
+    <string name="maps">Maps</string>
+    <string name="just_now">Just Now</string>
+    <string name="minutes_ago">%d minutes ago</string>
+    <string name="hours_ago">%d hours ago</string>
+    <string name="invalid_date">Invalid date</string>
+    <string name="location">Enable location</string>
 </resources>

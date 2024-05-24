@@ -8,9 +8,9 @@ import com.example.storyapp.di.Injection
 import com.example.storyapp.ui.login.LoginViewModel
 import com.example.storyapp.ui.onboarding.OnBoardingViewModel
 import com.example.storyapp.ui.register.RegisterViewModel
-import com.example.storyapp.ui.story.add.AddStoryActivity
 import com.example.storyapp.ui.story.add.AddStoryViewModel
 import com.example.storyapp.ui.story.main.MainStoryViewModel
+import com.example.storyapp.ui.story.main.maps.MapsStoryViewModel
 
 class ViewModelFactory(private val storyRepository: StoryRepository) :
     ViewModelProvider.NewInstanceFactory() {
@@ -36,6 +36,10 @@ class ViewModelFactory(private val storyRepository: StoryRepository) :
 
             modelClass.isAssignableFrom(OnBoardingViewModel::class.java) -> {
                 OnBoardingViewModel(storyRepository) as T
+            }
+
+            modelClass.isAssignableFrom(MapsStoryViewModel::class.java) -> {
+                MapsStoryViewModel(storyRepository) as T
             }
 
             else -> throw IllegalArgumentException("Unknown ViewModel class:  ${modelClass.name}")

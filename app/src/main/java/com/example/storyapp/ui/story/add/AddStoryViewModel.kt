@@ -17,10 +17,12 @@ class AddStoryViewModel(private val storyRepository: StoryRepository) : ViewMode
 
     fun postStory(
         imageFile: File,
-        description: String
+        description: String,
+        lat: Double? = null,
+        lon: Double? = null
     ) {
         viewModelScope.launch {
-            storyRepository.postStory(imageFile, description).collect {
+            storyRepository.postStory(imageFile, description, lat, lon).collect {
                 _postStoryResult.value = it
             }
         }

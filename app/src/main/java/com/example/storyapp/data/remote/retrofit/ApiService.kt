@@ -34,14 +34,21 @@ interface ApiService {
     @POST("stories")
     suspend fun postStory(
         @Part file: MultipartBody.Part,
-        @Part("description") description: RequestBody
+        @Part("description") description: RequestBody,
+        @Part("lat") lat: RequestBody? = null,
+        @Part("lon") lon: RequestBody? = null
     ): CommonResponse
 
     @GET("stories")
     suspend fun getStories(
-        @Query("page") page: Int? = null,
-        @Query("size") size: Int? = null,
+        @Query("page") page: Int = 1,
+        @Query("size") size: Int = 20,
         @Query("location") location: Int = 0
+    ): StoriesResponse
+
+    @GET("stories")
+    suspend fun getStoriesWithLocation(
+        @Query("location") location: Int = 1
     ): StoriesResponse
 
 }
