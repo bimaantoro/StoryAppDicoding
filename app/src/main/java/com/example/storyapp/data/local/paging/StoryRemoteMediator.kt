@@ -18,8 +18,7 @@ import kotlinx.coroutines.runBlocking
 @OptIn(ExperimentalPagingApi::class)
 class StoryRemoteMediator(
     private val storyDatabase: StoryDatabase,
-    private val apiService: ApiService,
-    val userPreference: UserPreference
+    private val userPreference: UserPreference
 ) : RemoteMediator<Int, StoryEntity>() {
     override suspend fun load(
         loadType: LoadType,
@@ -52,10 +51,9 @@ class StoryRemoteMediator(
         try {
             val user = runBlocking { userPreference.getSession().first() }
             val apiService = ApiConfig.getApiService(user.token)
-            val responseData = apiService.getStories(page, state.config.pageSize)
-
-            val endOfPaginationReached = responseData.listStory.isEmpty()
-            val result = DataMapper.mapStoryResponseToDataEntity(responseData.listStory)
+            val responseData = apiService.getStories(page, state.config.pageSize).listStory
+            val endOfPaginationReached = responseData.isEmpty()
+            val result = DataMapper.mapStoryResponseToDataEntity(responseData)
 
             storyDatabase.withTransaction {
                 if (loadType == LoadType.REFRESH) {
@@ -64,7 +62,7 @@ class StoryRemoteMediator(
                 }
                 val prevKey = if (page == 1) null else page - 1
                 val nextKey = if (endOfPaginationReached) null else page + 1
-                val keys = responseData.listStory.map {
+                val keys = responseData.map {
                     RemoteKeys(id = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
                 storyDatabase.remoteKeysDao().insertAll(keys)
@@ -88,7 +86,7 @@ class StoryRemoteMediator(
         return state.pages.lastOrNull {
             it.data.isNotEmpty()
         }?.data?.lastOrNull()?.let { data ->
-            data.id.let { storyDatabase.remoteKeysDao().getRemoteKeysId(it) }
+            storyDatabase.remoteKeysDao().getRemoteKeysId(data.id)
         }
     }
 
@@ -96,7 +94,7 @@ class StoryRemoteMediator(
         return state.pages.firstOrNull {
             it.data.isNotEmpty()
         }?.data?.firstOrNull()?.let { data ->
-            data.id.let { storyDatabase.remoteKeysDao().getRemoteKeysId(it) }
+            storyDatabase.remoteKeysDao().getRemoteKeysId(data.id)
         }
     }
 

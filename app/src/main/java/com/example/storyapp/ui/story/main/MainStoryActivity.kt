@@ -4,20 +4,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.storyapp.R
 import com.example.storyapp.adapter.LoadingStateAdapter
 import com.example.storyapp.adapter.StoryListAdapter
 import com.example.storyapp.databinding.ActivityMainStoryBinding
-import com.example.storyapp.ui.ViewModelFactory
+import com.example.storyapp.ui.StoryViewModelFactory
 import com.example.storyapp.ui.onboarding.OnBoardingActivity
 import com.example.storyapp.ui.story.add.AddStoryActivity
 import com.example.storyapp.ui.story.main.maps.MapsStoryActivity
@@ -34,7 +32,7 @@ class MainStoryActivity : AppCompatActivity() {
     }
 
     private val viewModel: MainStoryViewModel by viewModels {
-        ViewModelFactory.getInstance(this)
+        StoryViewModelFactory.getInstance(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,14 +82,6 @@ class MainStoryActivity : AppCompatActivity() {
                     storyListAdapter.retry()
                 }
             )
-        }
-
-        storyListAdapter.addLoadStateListener { loadState ->
-            if (loadState.refresh is LoadState.Loading) {
-                binding.progressBar.visibility = View.VISIBLE
-            } else {
-                binding.progressBar.visibility = View.GONE
-            }
         }
 
         viewModel.storyListResult.observe(this) { result ->
@@ -147,9 +137,5 @@ class MainStoryActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

@@ -54,7 +54,7 @@
     <string name="sub_headline">StoryApp is a platform for sharing stories and experiences about Dicoding. Here, you can find inspiring stories from young programmers and developers who have attended classes and workshops at Dicoding.</string>
     <string name="language_setting">Language setting</string>
     <string name="retry">Retry</string>
-    <string name="title_activity_maps_story">MapsStoryActivity</string>
+    <string name="title_activity_maps_story" translatable="false">MapsStoryActivity</string>
     <string name="maps">Maps</string>
     <string name="just_now">Just Now</string>
     <string name="minutes_ago">%d minutes ago</string>

@@ -17,7 +17,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.storyapp.R
 import com.example.storyapp.data.ResultState
 import com.example.storyapp.databinding.ActivityRegisterBinding
-import com.example.storyapp.ui.ViewModelFactory
+import com.example.storyapp.ui.UserViewModelFactory
 import com.example.storyapp.ui.login.LoginActivity
 
 class RegisterActivity : AppCompatActivity() {
@@ -27,7 +27,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private val viewModel: RegisterViewModel by viewModels {
-        ViewModelFactory.getInstance(this)
+        UserViewModelFactory.getInstance(this)
     }
 
 

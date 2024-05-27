@@ -41,8 +41,8 @@ interface ApiService {
 
     @GET("stories")
     suspend fun getStories(
-        @Query("page") page: Int = 1,
-        @Query("size") size: Int = 20,
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 0,
         @Query("location") location: Int = 0
     ): StoriesResponse
 

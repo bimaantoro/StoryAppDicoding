@@ -23,11 +23,10 @@ import com.example.storyapp.R
 import com.example.storyapp.data.ResultState
 import com.example.storyapp.data.remote.responses.CommonResponse
 import com.example.storyapp.databinding.ActivityAddStoryBinding
-import com.example.storyapp.ui.ViewModelFactory
+import com.example.storyapp.ui.StoryViewModelFactory
 import com.example.storyapp.ui.camera.CameraActivity
 import com.example.storyapp.ui.camera.CameraActivity.Companion.CAMERA_RESULT
 import com.example.storyapp.ui.camera.CameraActivity.Companion.EXTRA_IMAGE
-import com.example.storyapp.ui.story.main.MainStoryActivity
 import com.example.storyapp.utils.reduceFileImage
 import com.example.storyapp.utils.uriToFile
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -45,7 +44,7 @@ class AddStoryActivity : AppCompatActivity() {
     }
 
     private val viewModel: AddStoryViewModel by viewModels {
-        ViewModelFactory.getInstance(this)
+        StoryViewModelFactory.getInstance(this)
     }
 
     private fun checkPermission(permission: String): Boolean {
@@ -179,7 +178,7 @@ class AddStoryActivity : AppCompatActivity() {
                     setTitle(getString(R.string.success_title))
                     setMessage(resultState.data.message)
                     setPositiveButton(getString(R.string.close_title)) { _, _ ->
-                        moveToMain()
+                        finish()
                     }
 
                 }.create().show()
@@ -263,15 +262,10 @@ class AddStoryActivity : AppCompatActivity() {
                 showImage()
             }
         } else {
-            getString(R.string.err_document_picker)
+            showToast(getString(R.string.err_document_picker))
         }
     }
 
-    private fun moveToMain() {
-        val intent = Intent(this, MainStoryActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
-    }
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()

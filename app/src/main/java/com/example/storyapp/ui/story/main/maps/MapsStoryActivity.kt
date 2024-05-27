@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat
 import com.example.storyapp.R
 import com.example.storyapp.data.ResultState
 import com.example.storyapp.databinding.ActivityMapsStoryBinding
-import com.example.storyapp.ui.ViewModelFactory
+import com.example.storyapp.ui.StoryViewModelFactory
 import com.example.storyapp.ui.onboarding.OnBoardingActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -32,7 +32,7 @@ class MapsStoryActivity : AppCompatActivity(), OnMapReadyCallback {
     private val boundsBuilder = LatLngBounds.Builder()
 
     private val viewModel: MapsStoryViewModel by viewModels {
-        ViewModelFactory.getInstance(this)
+        StoryViewModelFactory.getInstance(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

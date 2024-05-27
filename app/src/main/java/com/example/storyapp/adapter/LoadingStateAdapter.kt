@@ -10,6 +10,19 @@ import com.example.storyapp.databinding.ItemLoadingBinding
 
 class LoadingStateAdapter(private val retry: () -> Unit) :
     LoadStateAdapter<LoadingStateAdapter.LoadingStateViewHolder>() {
+
+    override fun onBindViewHolder(holder: LoadingStateViewHolder, loadState: LoadState) {
+        holder.bind(loadState)
+    }
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        loadState: LoadState
+    ): LoadingStateViewHolder {
+        val binding = ItemLoadingBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return LoadingStateViewHolder(binding, retry)
+    }
+
     class LoadingStateViewHolder(private val binding: ItemLoadingBinding, retry: () -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
         init {
@@ -25,17 +38,5 @@ class LoadingStateAdapter(private val retry: () -> Unit) :
             binding.tvErrorMsg.isVisible = loadState is LoadState.Error
         }
 
-    }
-
-    override fun onBindViewHolder(holder: LoadingStateViewHolder, loadState: LoadState) {
-        holder.bind(loadState)
-    }
-
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        loadState: LoadState
-    ): LoadingStateViewHolder {
-        val binding = ItemLoadingBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return LoadingStateViewHolder(binding, retry)
     }
 }

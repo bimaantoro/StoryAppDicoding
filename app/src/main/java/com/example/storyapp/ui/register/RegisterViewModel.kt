@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.storyapp.data.ResultState
-import com.example.storyapp.data.StoryRepository
 import com.example.storyapp.data.remote.responses.CommonResponse
+import com.example.storyapp.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
-class RegisterViewModel(private val storyRepository: StoryRepository) : ViewModel() {
+class RegisterViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     private val _registerResult = MutableLiveData<ResultState<CommonResponse>>()
     val registerResult: LiveData<ResultState<CommonResponse>> = _registerResult
@@ -20,7 +20,7 @@ class RegisterViewModel(private val storyRepository: StoryRepository) : ViewMode
         password: String
     ) {
         viewModelScope.launch {
-            storyRepository.register(name, email, password).collect {
+            userRepository.register(name, email, password).collect {
                 _registerResult.value = it
             }
         }

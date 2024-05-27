@@ -55,4 +55,12 @@
     <string name="welcome">Selamat datang!</string>
     <string name="sub_headline">StoryApp adalah platform untuk berbagi cerita dan pengalaman seputar Dicoding. Di sini, kamu bisa menemukan berbagai kisah inspiratif dari para programmer dan developer muda yang telah mengikuti kelas dan workshop di Dicoding.</string>
     <string name="language_setting">Pengaturan bahasa</string>
+
+    <string name="retry">Coba lagi</string>
+    <string name="maps">Map</string>
+    <string name="just_now">Sekarang</string>
+    <string name="minutes_ago">%d menit yang lalu</string>
+    <string name="hours_ago">%d jam yang lalu</string>
+    <string name="invalid_date">Tanggal tidak valid</string>
+    <string name="location">Aktifkan lokasi</string>
 </resources>

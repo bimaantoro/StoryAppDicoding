@@ -77,7 +77,6 @@ class StoryListAdapter :
                     oldItem: StoryEntity,
                     newItem: StoryEntity
                 ): Boolean = oldItem == newItem
-
             }
     }
 }

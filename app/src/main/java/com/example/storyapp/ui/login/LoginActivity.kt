@@ -5,7 +5,6 @@ import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
@@ -19,7 +18,7 @@ import com.example.storyapp.R
 import com.example.storyapp.data.ResultState
 import com.example.storyapp.data.local.pref.UserModel
 import com.example.storyapp.databinding.ActivityLoginBinding
-import com.example.storyapp.ui.ViewModelFactory
+import com.example.storyapp.ui.UserViewModelFactory
 import com.example.storyapp.ui.register.RegisterActivity
 import com.example.storyapp.ui.story.main.MainStoryActivity
 
@@ -30,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private val viewModel: LoginViewModel by viewModels {
-        ViewModelFactory.getInstance(this)
+        UserViewModelFactory.getInstance(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,11 +79,10 @@ class LoginActivity : AppCompatActivity() {
                             viewModel.saveSession(
                                 UserModel(
                                     sessionData.loginResult?.name ?: "",
-                                    sessionData.loginResult?.token ?: ""
+                                    sessionData.loginResult?.token ?: "",
+                                    true
                                 )
                             )
-
-                            Log.d("LoginActivity", "Token: ${sessionData.loginResult?.token}")
                             moveToMain()
                         }
                     }

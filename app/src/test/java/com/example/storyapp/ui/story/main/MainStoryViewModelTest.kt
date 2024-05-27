@@ -8,7 +8,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.recyclerview.widget.ListUpdateCallback
 import com.example.storyapp.adapter.StoryListAdapter
-import com.example.storyapp.data.StoryRepository
+import com.example.storyapp.data.repository.StoryRepository
 import com.example.storyapp.data.local.entity.StoryEntity
 import com.example.storyapp.utils.DataStoryDummy
 import com.example.storyapp.utils.MainDispatcherRule

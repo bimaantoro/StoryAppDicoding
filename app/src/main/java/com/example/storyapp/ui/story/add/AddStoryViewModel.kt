@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.storyapp.data.ResultState
-import com.example.storyapp.data.StoryRepository
+import com.example.storyapp.data.repository.StoryRepository
 import com.example.storyapp.data.remote.responses.CommonResponse
 import kotlinx.coroutines.launch
 import java.io.File

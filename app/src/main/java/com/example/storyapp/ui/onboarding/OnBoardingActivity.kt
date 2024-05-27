@@ -15,7 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.storyapp.R
 import com.example.storyapp.databinding.ActivityOnBoardingBinding
-import com.example.storyapp.ui.ViewModelFactory
+import com.example.storyapp.ui.StoryViewModelFactory
 import com.example.storyapp.ui.login.LoginActivity
 import com.example.storyapp.ui.register.RegisterActivity
 import com.example.storyapp.ui.story.main.MainStoryActivity
@@ -27,7 +27,7 @@ class OnBoardingActivity : AppCompatActivity() {
     }
 
     private val viewModel: OnBoardingViewModel by viewModels {
-        ViewModelFactory.getInstance(this)
+        StoryViewModelFactory.getInstance(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
