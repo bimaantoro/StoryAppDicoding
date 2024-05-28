@@ -10,7 +10,6 @@ import com.example.storyapp.data.local.entity.StoryEntity
 import com.example.storyapp.data.local.pref.UserPreference
 import com.example.storyapp.data.local.room.StoryDatabase
 import com.example.storyapp.data.remote.retrofit.ApiConfig
-import com.example.storyapp.data.remote.retrofit.ApiService
 import com.example.storyapp.utils.DataMapper
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -20,6 +19,12 @@ class StoryRemoteMediator(
     private val storyDatabase: StoryDatabase,
     private val userPreference: UserPreference
 ) : RemoteMediator<Int, StoryEntity>() {
+
+    override suspend fun initialize(): InitializeAction {
+        return InitializeAction.LAUNCH_INITIAL_REFRESH
+    }
+
+
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, StoryEntity>
@@ -76,10 +81,6 @@ class StoryRemoteMediator(
         } catch (exc: Exception) {
             return MediatorResult.Error(exc)
         }
-    }
-
-    override suspend fun initialize(): InitializeAction {
-        return InitializeAction.LAUNCH_INITIAL_REFRESH
     }
 
     private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, StoryEntity>): RemoteKeys? {

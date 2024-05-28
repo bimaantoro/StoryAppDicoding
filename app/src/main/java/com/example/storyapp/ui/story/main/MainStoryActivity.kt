@@ -77,12 +77,14 @@ class MainStoryActivity : AppCompatActivity() {
         storyListAdapter = StoryListAdapter()
         binding.contentMainStory.rvStory.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = storyListAdapter.withLoadStateFooter(
-                footer = LoadingStateAdapter {
-                    storyListAdapter.retry()
-                }
-            )
+
         }
+
+        binding.contentMainStory.rvStory.adapter = storyListAdapter.withLoadStateFooter(
+            footer = LoadingStateAdapter {
+                storyListAdapter.retry()
+            }
+        )
 
         viewModel.storyListResult.observe(this) { result ->
             binding.progressBar.visibility = View.GONE
